@@ -148,13 +148,13 @@ if __name__ == '__main__':
 
     print('clustering ..\n')
 
-    #af = AffinityPropagation().fit(doc_2d)
+    af = AffinityPropagation().fit(doc_2d)
 
     print('plotting ..\n')
 
-    #plot_cluster(af, doc_2d, labels)
+    plot_cluster(af, doc_2d, labels)
 
-    plot_model(doc_2d, labels)
+    #plot_model(doc_2d, labels)
 
     #gmm = GMM(n_components=5).fit(doc_2d)
     #plot_gmm(doc_2d, labels, gmm)
