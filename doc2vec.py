@@ -9,10 +9,12 @@
 from gensim.models.doc2vec import *
 import os, sys
 import numpy as np
+import pandas as pd
 from sklearn.manifold import TSNE
 from sklearn.cluster import AffinityPropagation
 import matplotlib.pyplot as plt
 from itertools import cycle
+from nltk.corpus.reader.xmldocs import XMLCorpusView
 
 #from sklearn.mixture import GMM
 #import matplotlib as mpl
@@ -140,11 +142,34 @@ if __name__ == '__main__':
 
     model = Doc2Vec(docs)           # TODO: parameter testen
 
+
+    # raw output
+    doc_orig = model.syn0
+    np.savetxt('doc2vec_model.csv', doc_orig, delimiter='\t')
+
+
     labels = list(model.docvecs.doctags.keys())
+
+
+    # build list of tags from the metadata
+    metadata = pd.DataFrame(index=labels, columns=['Tags'])
+
+    view = XMLCorpusView('txt/export-abstracts.xml', '.*/article')
+    iter = view.iterate_from(0)
+    for entry in iter:
+        metadata.loc[entry.attrib['{http://www.w3.org/XML/1998/namespace}id']+'.txt', 'Tags'] = entry.attrib['type']
+
+    metadata.to_csv('doc2vec_metadata.csv')
+
 
     print('reducing data ..\n')
 
     doc_2d = tsne(model)
+
+
+    # raw output
+    np.savetxt('doc2vec_reduced.csv', doc_2d, delimiter='\t')
+
 
     print('clustering ..\n')
 
@@ -153,6 +178,7 @@ if __name__ == '__main__':
     print('plotting ..\n')
 
     plot_cluster(af, doc_2d, labels)
+
 
     #plot_model(doc_2d, labels)
 

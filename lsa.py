@@ -6,7 +6,9 @@ from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
 from itertools import cycle
 import numpy as np
+import pandas as pd
 import os, sys
+from nltk.corpus.reader.xmldocs import XMLCorpusView
 
 
 #import logging
@@ -110,12 +112,32 @@ if __name__ == '__main__':
 
     matrix = np.array(matrix_list)                          # in array form
 
+
+    # raw output
+    np.savetxt('lsa_model.csv', matrix, delimiter='\t')  # raw output
+
+
     doc_2d = []
     for doc, file in zip(matrix, filenames):                # reduce the data to 2 dimensions
         #print(file, "\n", doc, "\n\n")    # debug msg
         doc_2d.append(TSNE().fit_transform(doc).tolist()[0])
 
     matrix = np.asarray(doc_2d)                             # update matrix array
+
+
+    # raw output
+    np.savetxt('lsa_reduced.csv', matrix, delimiter='\t')  # raw output
+
+
+    # build list of tags from the metadata
+    metadata = pd.DataFrame(index=filenames, columns=['Tags'])
+
+    view = XMLCorpusView('txt/export-abstracts.xml', '.*/article')
+    iter = view.iterate_from(0)
+    for entry in iter:
+        metadata.loc[entry.attrib['{http://www.w3.org/XML/1998/namespace}id']+'.txt', 'Tags'] = entry.attrib['type']
+
+    metadata.to_csv('lsa_metadata.csv')
 
 
     ##############################################################################
@@ -182,6 +204,6 @@ if __name__ == '__main__':
             plt.annotate(filenames[doc_id], (x[0], x[1]), xytext=(0, -8),
                          textcoords="offset points", va="center", ha="left")
 
-    plt.savefig("out.png", dpi=90)
+    plt.savefig("out_lsa.png", dpi=90)
 
     print("saved output to ./out_lsa.png\n")
