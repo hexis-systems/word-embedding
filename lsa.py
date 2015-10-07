@@ -98,7 +98,7 @@ if __name__ == '__main__':
                                                                                     # default: topics 200, chunk 2000
     print(model, '\n')
 
-    for topic in model.show_topics(): print(topic, '\n')
+    for topic in model.show_topics(num_words=30): print(topic, '\n')
 
 
     print("reducing data ...\n")
