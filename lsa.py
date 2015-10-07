@@ -96,8 +96,9 @@ if __name__ == '__main__':
     model = models.LsiModel(corpus, id2word=dictionary, num_topics=200, chunksize=10) #,
                             #onepass=False, power_iters=6, extra_samples=500)       # sensible: topics 10
                                                                                     # default: topics 200, chunk 2000
-
     print(model, '\n')
+
+    for topic in model.show_topics(): print(topic, '\n')
 
 
     print("reducing data ...\n")
@@ -106,8 +107,8 @@ if __name__ == '__main__':
 
     for doc in corpus:                                      # querying the model using the original bow document
         tmp_doc = []
-        tmp = model.__getitem__(doc) #, eps=0)              # TODO: dokumentieren was __getitem__ hier genau ausgibt
-        for word in tmp: tmp_doc.append(word[1])            # save only second part of the tuple
+        tmp = model.__getitem__(doc) #, eps=0)
+        for word in tmp: tmp_doc.append(word[1])
         matrix_list.append(tmp_doc)
 
     matrix = np.array(matrix_list)                          # in array form
